@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bahora, Senga Maxsus Maktub Bor... ❤️</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tone.js (Yumshoq romantik musiqa va ovoz effektlari uchun) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-pink: #ff4d6d;
+            --soft-pink: #ff8fa3;
+            --deep-purple: #1a0b2e;
+            --gold: #ffd166;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #2b1055 0%, #1a0b2e 50%, #0d041a 100%);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        .font-script {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .font-serif-elegant {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Fon Canvas */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 3D Konvert Dizayni */
+        .envelope-wrapper {
+            perspective: 1200px;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .envelope-wrapper:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .envelope {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            background: linear-gradient(135deg, #ff758f 0%, #ff4d6d 100%);
+            border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(255, 77, 109, 0.4), 0 0 25px rgba(255, 143, 163, 0.3);
+            transform-style: preserve-3d;
+        }
+
+        @media (min-width: 640px) {
+            .envelope {
+                width: 380px;
+                height: 250px;
+            }
+        }
+
+        /* Konvertning yuqori qopqog'i */
+        .envelope-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 125px solid #ff8fa3;
+            transform-origin: top;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.4s;
+            z-index: 4;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .envelope-flap {
+                border-left: 190px solid transparent;
+                border-right: 190px solid transparent;
+                border-top: 140px solid #ff8fa3;
+            }
+        }
+
+        .envelope.open .envelope-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        /* Konvert cho'ntagi (yon va pastki qismlar) */
+        .envelope-pocket {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 0;
+            border-left: 160px solid #ff4d6d;
+            border-right: 160px solid #ff5c7a;
+            border-bottom: 115px solid #e01e37;
+            border-top: 105px solid transparent;
+            border-radius: 0 0 12px 12px;
+            z-index: 3;
+        }
+
+        @media (min-width: 640px) {
+            .envelope-pocket {
+                border-left: 190px solid #ff4d6d;
+                border-right: 190px solid #ff5c7a;
+                border-bottom: 130px solid #e01e37;
+                border-top: 120px solid transparent;
+            }
+        }
+
+        /* Konvert ichidagi qog'oz */
+        .envelope-paper {
+            position: absolute;
+            bottom: 10px;
+            left: 5%;
+            width: 90%;
+            height: 85%;
+            background: #fff9fb;
+            border-radius: 8px;
+            z-index: 2;
+            transition: transform 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.4s;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            color: #590d22;
+        }
+
+        .envelope.open .envelope-paper {
+            transform: translateY(-130px);
+        }
+
+        /* Yurakcha muhr (Wax Seal) */
+        .heart-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 56px;
+            height: 56px;
+            background: radial-gradient(circle, #ffccd5 0%, #c9184a 100%);
+            border-radius: 50%;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 77, 109, 0.8);
+            animation: pulse-heart 1.6s infinite;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .envelope.open .heart-seal {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+            pointer-events: none;
+        }
+
+        @keyframes pulse-heart {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.15); }
+        }
+
+        /* Asosiy Maktub Kartasi (Glassmorphism + Pergament) */
+        .letter-card {
+            background: rgba(255, 250, 252, 0.95);
+            color: #3d0814;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5), 0 0 40px rgba(255, 77, 109, 0.35);
+            border: 2px solid rgba(255, 182, 193, 0.8);
+            backdrop-filter: blur(12px);
+            animation: floatUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes floatUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* Yozuv kursori */
+        .cursor-blink {
+            display: inline-block;
+            width: 2px;
+            height: 1.2em;
+            background-color: #ff4d6d;
+            margin-left: 2px;
+            vertical-align: middle;
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Musiqa to'lqinlari animatsiyasi */
+        .sound-wave span {
+            display: inline-block;
+            width: 3px;
+            height: 12px;
+            background: #ff8fa3;
+            border-radius: 3px;
+            margin: 0 1.5px;
+            animation: wave 1s ease-in-out infinite;
+        }
+        .sound-wave span:nth-child(2) { animation-delay: 0.2s; }
+        .sound-wave span:nth-child(3) { animation-delay: 0.4s; }
+        .sound-wave span:nth-child(4) { animation-delay: 0.1s; }
+        .sound-wave.paused span {
+            animation: none;
+            height: 4px;
+        }
+
+        @keyframes wave {
+            0%, 100% { height: 5px; }
+            50% { height: 18px; }
+        }
+
+        /* Qochib ketadigan tugma uchun silliq harakat */
+        #no-btn {
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), left 0.25s ease, top 0.25s ease;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen relative p-4">
+
+    <!-- Orqa fon animatsiya canvasi (Yulduzlar, atirgul barglari va mushakbozlik) -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Yuqori o'ng burchakdagi musiqa boshqaruvi -->
+    <button id="music-toggle" class="fixed top-4 right-4 z-50 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-pink-300/30 text-pink-100 px-3.5 py-2 rounded-full flex items-center gap-2 text-xs sm:text-sm transition shadow-lg">
+        <div id="wave-icon" class="sound-wave paused flex items-center h-4">
+            <span></span><span></span><span></span><span></span>
+        </div>
+        <span id="music-label">Musiqa: O'chiq</span>
+    </button>
+
+    <!-- 1-BOSQICH: Kirish ekrani (3D Konvert) -->
+    <main id="intro-section" class="relative z-10 flex flex-col items-center text-center max-w-lg mx-auto transition-all duration-700">
+        <div class="mb-6">
+            <span class="inline-block px-4 py-1.5 rounded-full bg-pink-500/20 border border-pink-400/30 text-pink-200 text-xs sm:text-sm tracking-wider uppercase mb-3 animate-pulse">
+                ✨ Maxsus va sirli xabar ✨
+            </span>
+            <h1 class="font-script text-5xl sm:text-6xl text-pink-200 drop-shadow-[0_2px_15px_rgba(255,77,109,0.6)]">
+                Bahora, senga maktub bor...
+            </h1>
+            <p class="text-pink-100/80 text-sm sm:text-base mt-2 font-light">
+                Ushbu maktub faqat sening yuraging uchun yozilgan. Ochish uchun konvertga bos ❤️
+            </p>
+        </div>
+
+        <!-- Interaktiv 3D Konvert -->
+        <div id="envelope-trigger" class="envelope-wrapper my-4" role="button" tabindex="0" aria-label="Maktubni ochish">
+            <div id="envelope" class="envelope">
+                <div class="envelope-flap"></div>
+                <div class="envelope-paper">
+                    <p class="font-script text-3xl text-rose-600">Aziz Bahora...</p>
+                    <p class="text-xs text-rose-400 mt-1">Qalbim so'zlari</p>
+                </div>
+                <div class="envelope-pocket"></div>
+                <div class="heart-seal">
+                    <svg class="w-7 h-7 text-white fill-current" viewBox="0 0 24 24">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <button id="open-btn-fallback" class="mt-6 px-7 py-3 rounded-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 text-white font-medium shadow-[0_0_25px_rgba(244,63,94,0.6)] transform hover:scale-105 transition flex items-center gap-2">
+            <span>Maktubni ochish</span>
+            <span>💌</span>
+        </button>
+    </main>
+
+    <!-- 2-BOSQICH: Ochilgan Maktub va Typewriter Izhor -->
+    <section id="letter-section" class="hidden relative z-10 w-full max-w-2xl mx-auto my-6">
+        <div class="letter-card rounded-3xl p-6 sm:p-10 relative overflow-hidden">
+            <!-- Dekorativ burchak gullari (SVG) -->
+            <div class="absolute top-0 right-0 opacity-20 pointer-events-none">
+                <svg width="120" height="120" viewBox="0 0 100 100" fill="#ff4d6d">
+                    <circle cx="80" cy="20" r="35"/>
+                    <circle cx="50" cy="10" r="20"/>
+                </svg>
+            </div>
+
+            <!-- Maktub sarlavhasi -->
+            <div class="border-b border-rose-200 pb-4 mb-6 flex items-center justify-between">
+                <div>
+                    <h2 class="font-script text-4xl sm:text-5xl text-rose-600">Aziz Bahora,</h2>
+                    <p class="text-xs text-rose-400 italic mt-0.5">Qalbimning eng tubidan...</p>
+                </div>
+                <div class="text-3xl animate-bounce">🌸</div>
+            </div>
+
+            <!-- Typewriter matni chiqadigan joy -->
+            <div id="typewriter-container" class="font-serif-elegant text-base sm:text-lg leading-relaxed text-gray-800 space-y-4 min-h-[220px]">
+                <p id="typed-text"></p>
+            </div>
+
+            <!-- Romantik Iqtibos Bloki (Matn tugagach chiqadi) -->
+            <div id="quote-box" class="hidden mt-6 p-4 rounded-2xl bg-rose-50 border border-rose-200/80 text-center transition-all duration-700">
+                <p class="font-serif-elegant italic text-rose-700 text-sm sm:text-base">
+                    "Minglab yulduzlar orasida ko'zim faqat seni izlaydi, chunki sen mening osmonimdagi yagona bahorsan..."
+                </p>
+            </div>
+
+            <!-- 3-BOSQICH: Interaktiv Savol Qismi -->
+            <div id="question-box" class="hidden mt-8 pt-6 border-t border-rose-200 text-center">
+                <h3 class="font-script text-4xl sm:text-5xl text-rose-600 mb-2">
+                    Mening hayotimning bahori bo'lasanmi?
+                </h3>
+                <p class="text-xs sm:text-sm text-gray-500 mb-6">
+                    Javobingni intizorlik bilan kutyapman... ❤️
+                </p>
+
+                <div class="flex flex-wrap items-center justify-center gap-4 relative min-h-[64px]">
+                    <!-- HA tugmasi -->
+                    <button id="yes-btn" class="px-8 py-3.5 rounded-full bg-gradient-to-r from-rose-500 via-pink-600 to-red-500 text-white font-semibold text-base sm:text-lg shadow-[0_10px_25px_rgba(225,29,72,0.45)] hover:shadow-[0_15px_35px_rgba(225,29,72,0.65)] transform hover:scale-110 active:scale-95 transition-all cursor-pointer z-20">
+                        Ha, albatta ❤️
+                    </button>
+
+                    <!-- Qochib ketadigan YO'Q tugmasi -->
+                    <button id="no-btn" class="px-6 py-3 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium text-sm sm:text-base shadow-md cursor-pointer z-20">
+                        Yo'q 🙈
+                    </button>
+                </div>
+                <p id="tease-message" class="text-xs text-rose-500 font-medium mt-3 h-4 opacity-0 transition-opacity"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4-BOSQICH: Final Bayram Ekrani (Ha bosilgandan keyin) -->
+    <section id="celebration-section" class="hidden relative z-20 text-center max-w-xl mx-auto px-4">
+        <div class="bg-white/10 backdrop-blur-xl border border-pink-300/40 rounded-3xl p-8 sm:p-12 shadow-[0_0_60px_rgba(255,77,109,0.5)] transform transition-all animate-[floatUp_0.8s_ease-out]">
+            <div class="text-6xl sm:text-7xl mb-4 animate-bounce">💖🎉🌸</div>
+            <h2 class="font-script text-5xl sm:text-7xl text-pink-200 drop-shadow-[0_4px_20px_rgba(255,77,109,0.8)] mb-4">
+                Bahora + Men = ❤️
+            </h2>
+            <p class="font-serif-elegant text-lg sm:text-2xl text-white leading-relaxed mb-6">
+                Hayotimdagi eng go'zal qaror! Seni baxtiyor qilish uchun qo'limdan kelgan barcha narsani qilaman, aziz Bahoram!
+            </p>
+            <div class="inline-block px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-500/30 to-rose-500/30 border border-pink-300/50 text-pink-100 text-sm">
+                ✨ Bizning eng chiroyli hikoyamiz endi boshlandi ✨
+            </div>
+            
+            <div class="mt-8">
+                <button id="more-fireworks-btn" class="px-5 py-2.5 rounded-full bg-white/15 hover:bg-white/25 text-pink-100 text-xs sm:text-sm border border-pink-200/30 transition">
+                    Yana mushakbozlik otish 🎆
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        /**
+         * 1. OVOZ VA ROMANTIK MELODIYA (Tone.js)
+         * Tashqi MP3 fayllarsiz to'g'ridan-to'g'ri brauzerda yumshoq pianino/arp melodiyasini yaratadi.
+         */
+        let isMusicPlaying = false;
+        let synth = null;
+        let loop = null;
+
+        async function initAudio() {
+            if (synth) return;
+            await Tone.start();
+            
+            // Yumshoq romantik reverb effekti
+            const reverb = new Tone.Reverb({
+                decay: 4,
+                wet: 0.5
+            }).toDestination();
+
+            synth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: "sine" },
+                envelope: {
+                    attack: 0.4,
+                    decay: 0.8,
+                    sustain: 0.4,
+                    release: 2.0
+                },
+                volume: -14
+            }).connect(reverb);
+
+            // Romantik akkordlar ketma-ketligi
+            const notes = [
+                ["C4", "E4", "G4", "B4"],
+                ["A3", "C4", "E4", "G4"],
+                ["F3", "A3", "C4", "E4"],
+                ["G3", "B3", "D4", "F4"]
+            ];
+            let step = 0;
+
+            loop = new Tone.Loop((time) => {
+                const chord = notes[step % notes.length];
+                // Har bir notani arpedjio shaklida chalish
+                chord.forEach((note, idx) => {
+                    synth.triggerAttackRelease(note, "2n", time + idx * 0.35);
+                });
+                step++;
+            }, "2m");
+        }
+
+        async function toggleMusic(forcePlay = false) {
+            try {
+                await initAudio();
+                const waveIcon = document.getElementById('wave-icon');
+                const label = document.getElementById('music-label');
+
+                if (forcePlay || !isMusicPlaying) {
+                    Tone.Transport.start();
+                    loop.start(0);
+                    isMusicPlaying = true;
+                    waveIcon.classList.remove('paused');
+                    label.textContent = "Musiqa: Yoqiq";
+                } else {
+                    Tone.Transport.pause();
+                    isMusicPlaying = false;
+                    waveIcon.classList.add('paused');
+                    label.textContent = "Musiqa: O'chiq";
+                }
+            } catch (err) {
+                console.warn("Audio ishga tushirishda xatolik:", err);
+            }
+        }
+
+        document.getElementById('music-toggle').addEventListener('click', () => toggleMusic(false));
+
+        /**
+         * 2. CANVAS ANIMATSIYALARI: Yulduzlar, Atirgul Barglari va Mushakbozlik
+         */
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let stars = [];
+        let petals = [];
+        let fireworks = [];
+        let particles = [];
+        let showPetals = false;
+        let celebrationMode = false;
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Yulduzlar va uchuvchi yurakchalar yaratish
+        class StarParticle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2.2 + 0.5;
+                this.speedY = Math.random() * 0.3 + 0.1;
+                this.alpha = Math.random();
+                this.alphaChange = (Math.random() * 0.02) + 0.005;
+                this.isHeart = Math.random() < 0.15; // 15% ehtimol bilan kichik yurakcha
+            }
+            update() {
+                this.y -= this.speedY;
+                this.alpha += this.alphaChange;
+                if (this.alpha >= 1 || this.alpha <= 0.1) {
+                    this.alphaChange *= -1;
+                }
+                if (this.y < -10) {
+                    this.y = height + 10;
+                    this.x = Math.random() * width;
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, Math.min(1, this.alpha));
+                if (this.isHeart) {
+                    ctx.fillStyle = '#ff8fa3';
+                    ctx.font = `${this.size * 6}px Arial`;
+                    ctx.fillText('♥', this.x, this.y);
+                } else {
+                    ctx.fillStyle = '#fff0f3';
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        // Atirgul / Sakura barglari (Maktub ochilganda yog'iladi)
+        class Petal {
+            constructor() {
+                this.reset(true);
+            }
+            reset(initial = false) {
+                this.x = Math.random() * width;
+                this.y = initial ? Math.random() * height : -20;
+                this.size = Math.random() * 8 + 6;
+                this.speedY = Math.random() * 1.5 + 0.8;
+                this.speedX = Math.random() * 1.2 - 0.6;
+                this.angle = Math.random() * Math.PI * 2;
+                this.spin = (Math.random() - 0.5) * 0.04;
+                const colors = ['#ff4d6d', '#ff758f', '#ff8fa3', '#ffb3c1', '#c9184a'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX + Math.sin(this.angle) * 0.5;
+                this.angle += this.spin;
+                if (this.y > height + 20) {
+                    this.reset(false);
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size, this.size * 0.6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Mushakbozlik (Firework) klasslari
+        class Firework {
+            constructor(targetX, targetY) {
+                this.x = width / 2 + (Math.random() - 0.5) * (width * 0.5);
+                this.y = height;
+                this.targetX = targetX || Math.random() * (width * 0.8) + width * 0.1;
+                this.targetY = targetY || Math.random() * (height * 0.45) + height * 0.1;
+                const angle = Math.atan2(this.targetY - this.y, this.targetX - this.x);
+                const speed = 9;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.hue = Math.floor(Math.random() * 60) + 320; // Pushti, qizil, oltin ranglar
+                this.exploded = false;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                const dist = Math.hypot(this.targetX - this.x, this.targetY - this.y);
+                if (dist < 15 || this.y <= this.targetY) {
+                    this.exploded = true;
+                    createExplosion(this.x, this.y, this.hue);
+                }
+            }
+            draw() {
+                ctx.save();
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 70%)`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class ExplosionParticle {
+            constructor(x, y, hue, isHeartShape = false) {
+                this.x = x;
+                this.y = y;
+                this.hue = hue + (Math.random() * 30 - 15);
+                this.alpha = 1;
+                this.decay = Math.random() * 0.015 + 0.01;
+                this.gravity = 0.06;
+                this.friction = 0.96;
+
+                if (isHeartShape) {
+                    // Yurak shaklidagi portlash formulasi
+                    const t = Math.random() * Math.PI * 2;
+                    const scale = Math.random() * 0.25 + 0.15;
+                    this.vx = (16 * Math.pow(Math.sin(t), 3)) * scale;
+                    this.vy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * scale;
+                } else {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 6 + 2;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                }
+            }
+            update() {
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.alpha);
+                ctx.fillStyle = `hsl(${this.hue}, 100%, 65%)`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createExplosion(x, y, hue) {
+            const isHeart = Math.random() < 0.6; // 60% yurak shaklidagi mushakbozlik
+            const count = isHeart ? 70 : 50;
+            for (let i = 0; i < count; i++) {
+                particles.push(new ExplosionParticle(x, y, hue, isHeart));
+            }
+        }
+
+        // Boshlang'ich yulduzlarni yaratish
+        for (let i = 0; i < 85; i++) {
+            stars.push(new StarParticle());
+        }
+        for (let i = 0; i < 35; i++) {
+            petals.push(new Petal());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Yulduzlar
+            stars.forEach(s => {
+                s.update();
+                s.draw();
+            });
+
+            // Atirgul barglari
+            if (showPetals) {
+                petals.forEach(p => {
+                    p.update();
+                    p.draw();
+                });
+            }
+
+            // Mushakbozliklar
+            if (celebrationMode && Math.random() < 0.06) {
+                fireworks.push(new Firework());
+            }
+
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].update();
+                fireworks[i].draw();
+                if (fireworks[i].exploded) {
+                    fireworks.splice(i, 1);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw();
+                if (particles[i].alpha <= 0) {
+                    particles.splice(i, 1);
+                }
+            }
+
+            requestAnimationFrame(animateCanvas);
+        }
+
+        /**
+         * 3. MAKTUBNI OCHISH VA TYPEWRITER (HARFMA-HARF YOZISH) LOGIKASI
+         */
+        const letterContent = `Aziz Bahora, hayotimga xuddi isming kabi bahoriy iliqlik va nur olib kirding... 🌸\n\nSeni ilk bor uchratgan kunimdan beri dunyoyim ranglarga to'ldi. Sening samimiy tabassuming, mehr to'la ko'zlaring va har bir so'zing yuragimga o'zgacha xotirjamlik bag'ishlaydi.\n\nKo'p o'yladim va bugun qalbimdagi eng katta haqiqatni senga aytishga qaror qildim: Men seni chin dildan sevaman! ❤️`;
+
+        let isEnvelopeOpened = false;
+
+        function openLetterSequence() {
+            if (isEnvelopeOpened) return;
+            isEnvelopeOpened = true;
+
+            // Musiqani avtomatik yoqish
+            toggleMusic(true);
+
+            // Konvertni ochish animatsiyasi
+            const envelope = document.getElementById('envelope');
+            envelope.classList.add('open');
+
+            // Atirgul barglarini yog'dirishni boshlash
+            showPetals = true;
+
+            // 1.3 soniyadan so'ng kirish ekranini yashirib, asosiy maktubni ko'rsatish
+            setTimeout(() => {
+                const intro = document.getElementById('intro-section');
+                intro.style.opacity = '0';
+                intro.style.transform = 'scale(0.9)';
+
+                setTimeout(() => {
+                    intro.classList.add('hidden');
+                    const letterSection = document.getElementById('letter-section');
+                    letterSection.classList.remove('hidden');
+                    startTypewriter();
+                }, 500);
+            }, 1300);
+        }
+
+        document.getElementById('envelope-trigger').addEventListener('click', openLetterSequence);
+        document.getElementById('open-btn-fallback').addEventListener('click', openLetterSequence);
+
+        function startTypewriter() {
+            const target = document.getElementById('typed-text');
+            let index = 0;
+
+            function typeNextChar() {
+                if (index < letterContent.length) {
+                    const char = letterContent.charAt(index);
+                    if (char === '\n') {
+                        target.innerHTML = target.innerHTML.replace('<span class="cursor-blink"></span>', '') + '<br>';
+                    } else {
+                        target.innerHTML = target.innerHTML.replace('<span class="cursor-blink"></span>', '') + char;
+                    }
+                    target.innerHTML += '<span class="cursor-blink"></span>';
+                    index++;
+
+                    // Tinish belgilarida biroz pauza qilish tabiiy chiqishi uchun
+                    let delay = 38;
+                    if (char === '.' || char === '!' || char === ',') delay = 220;
+                    setTimeout(typeNextChar, delay);
+                } else {
+                    // Yozish tugagach kursorni olib tashlash va savol qismini ochish
+                    target.innerHTML = target.innerHTML.replace('<span class="cursor-blink"></span>', '');
+                    
+                    const quoteBox = document.getElementById('quote-box');
+                    const questionBox = document.getElementById('question-box');
+                    
+                    quoteBox.classList.remove('hidden');
+                    setTimeout(() => {
+                        questionBox.classList.remove('hidden');
+                        questionBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 600);
+                }
+            }
+
+            typeNextChar();
+        }
+
+        /**
+         * 4. QOCHIB KETADIGAN "YO'Q" TUGMASI VA "HA" TUGMASI LOGIKASI
+         */
+        const noBtn = document.getElementById('no-btn');
+        const yesBtn = document.getElementById('yes-btn');
+        const teaseMsg = document.getElementById('tease-message');
+
+        const teasePhrases = [
+            "Voy, tutolmadinku! 😜",
+            "Bahora, bu tugma ishlamaydi! 🙈",
+            "Yaxshilab o'ylab ko'r, yonidagi tugma chiroyliroq ❤️",
+            "Qochib ketdi-ku! 😂",
+            "Baribir 'Ha' tugmasini bosasan-ku 😉"
+        ];
+        let teaseCount = 0;
+
+        function moveNoButton(e) {
+            if (e) e.preventDefault();
+            
+            // Ekran chegarasidan chiqib ketmasligi uchun xavfsiz masofa
+            const maxX = Math.min(window.innerWidth * 0.35, 160);
+            const maxY = Math.min(window.innerHeight * 0.25, 120);
+            
+            const randomX = (Math.random() * 2 - 1) * maxX;
+            const randomY = (Math.random() * 2 - 1) * maxY;
+
+            noBtn.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            
+            // "Ha" tugmasini har safar biroz kattalashtirish
+            const currentScale = 1 + Math.min(teaseCount * 0.06, 0.35);
+            yesBtn.style.transform = `scale(${currentScale})`;
+
+            // Hazil matnini ko'rsatish
+            teaseMsg.textContent = teasePhrases[teaseCount % teasePhrases.length];
+            teaseMsg.style.opacity = '1';
+            teaseCount++;
+        }
+
+        // Kompyuterda sichqoncha yaqinlashganda va telefonda bosilganda qochish
+        noBtn.addEventListener('mouseover', moveNoButton);
+        noBtn.addEventListener('touchstart', moveNoButton, { passive: false });
+        noBtn.addEventListener('click', moveNoButton);
+
+        /**
+         * 5. FINAL BAYRAM EFFEKTI ("HA, ALBATTA" BOSILGANDA)
+         */
+        yesBtn.addEventListener('click', () => {
+            celebrationMode = true;
+
+            // Darhol bir nechta katta mushakbozlik otish
+            for (let i = 0; i < 6; i++) {
+                setTimeout(() => {
+                    fireworks.push(new Firework());
+                }, i * 250);
+            }
+
+            // Maktub oynasini yashirib, bayram tabrigini ko'rsatish
+            const letterSection = document.getElementById('letter-section');
+            letterSection.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            letterSection.style.opacity = '0';
+            letterSection.style.transform = 'scale(0.9)';
+
+            setTimeout(() => {
+                letterSection.classList.add('hidden');
+                const celebrationSection = document.getElementById('celebration-section');
+                celebrationSection.classList.remove('hidden');
+            }, 500);
+        });
+
+        // Qo'shimcha mushakbozlik tugmasi
+        document.getElementById('more-fireworks-btn').addEventListener('click', () => {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => fireworks.push(new Firework()), i * 200);
+            }
+        });
+
+        // Sahifa yuklanganda canvas animatsiyasini ishga tushirish
+        window.onload = function() {
+            animateCanvas();
+        };
+    </script>
+</body>
+</html>
